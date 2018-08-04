@@ -8,7 +8,7 @@ namespace ConsoleSubteEstadisticas
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Process.ProcessRepositories().Wait();
+            ProcessEstadoSubte.ProcessEstado().Wait();
             Console.ReadKey();
         }
     }
