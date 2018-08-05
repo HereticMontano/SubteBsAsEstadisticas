@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading;
 
 namespace ConsoleSubteEstadisticas
 {
@@ -7,9 +8,14 @@ namespace ConsoleSubteEstadisticas
     {        
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            ProcessEstadoSubte.ProcessEstado().Wait();
-            Console.ReadKey();
+            while (true)
+            {
+                Console.WriteLine("pRICIPIO");
+                ProcessEstadoSubte.ProcessEstado().Wait();
+                Console.WriteLine("fIN");                
+                //Thread.Sleep(new TimeSpan(0,5,0));
+            }
+            
         }
     }
 }

@@ -3,6 +3,7 @@ using Repository.Enum;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -21,21 +22,40 @@ namespace ConsoleSubteEstadisticas
 
             var stringTask = client.GetStringAsync("https://haysubte.now.sh/api");
 
-           var lineas = AddKeysToValues(await stringTask);
+            var lineas = AddKeysToValues(await stringTask);
+
+            var lastLog = Repository.Estadoservicio.Where(x => x.FechaHasta == null);
+
 
             foreach (var item in lineas)
             {
-                var aux = new Estadoservicio
+                var idLinea = (sbyte)Enum.Parse(typeof(EnumLinea), item.Linea.ToUpper());
+                var idEstado = (sbyte)Enum.Parse(typeof(EnumEstado), item.Detalle.Status.ToUpper());
+                var linea = lastLog.FirstOrDefault(x => x.IdLinea == idLinea);
+                if (linea == null )
                 {
-                    IdLinea = (sbyte)Enum.Parse(typeof(EnumLinea), item.Linea.ToUpper()),
-                    IdEstado = (sbyte)Enum.Parse(typeof(EnumEstado), item.Detalle.Status.ToUpper()),
-                    FechaDesde = DateTime.UtcNow,
-                    Descripcion = item.Detalle.Text
-                };
-                Repository.Estadoservicio.Add(aux);
+                    AddEstado(item, idLinea, idEstado);
+                }
+                else if(linea.IdEstado != idEstado)
+                {
+                    linea.FechaHasta = DateTime.UtcNow;
+                    AddEstado(item, idLinea, idEstado);
+                }
             }
 
             Repository.SaveChanges();
+        }
+
+        private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado)
+        {
+            var aux = new Estadoservicio
+            {
+                IdLinea = idLinea,
+                IdEstado = idEstado,
+                FechaDesde = DateTime.UtcNow,
+                Descripcion = item.Detalle.Text
+            };
+            Repository.Estadoservicio.Add(aux);
         }
 
         private static List<SubteStatus> AddKeysToValues(string json)
