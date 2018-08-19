@@ -1,8 +1,16 @@
-﻿@model BaseViewModel
+﻿@model HomeViewModel
 
-
-@{foreach (var item in Model.Info)
+@section Scripts
 	{
-		<a>@item</a>
-	}
+	<script type="text/javascript" src="@Url.Content("/js/Chart.min.js")"></script>
+	<script type="text/javascript" src="@Url.Content("/js/Site.js")"></script>
+
+		<script>
+			var chart;
+			$(function () {				
+				chart = NewInstanceChart("myChart", @(Html.Raw(Json.Serialize(Model.GetNumeros.ToArray()))));			
+			});
+		</script>
 }
+
+<canvas id="myChart" width="400" height="400"></canvas>

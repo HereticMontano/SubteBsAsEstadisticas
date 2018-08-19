@@ -7,6 +7,11 @@ namespace WebSubteEstadisticas.Models
 {
     public class HomeViewModel : BaseViewModel
     {
-       public List<Estadoservicio> GetEstadoservicios { get; set; }
+        public HomeViewModel()
+        {
+            GetNumeros = new List<int>();
+        }
+        public List<Estadoservicio> GetEstadoservicios { get; set; }
+        public List<int> GetNumeros { get; set; }
     }
 }
