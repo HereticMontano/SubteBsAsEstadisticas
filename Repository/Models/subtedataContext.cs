@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
-
 namespace Repository.Models
 {
     public partial class SubtedataContext : DbContext
@@ -21,12 +20,12 @@ namespace Repository.Models
         public virtual DbSet<Estado> Estado { get; set; }
         public virtual DbSet<Estadoservicio> Estadoservicio { get; set; }
         public virtual DbSet<Linea> Linea { get; set; }
+        public virtual DbSet<Precalculado> Precalculado { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-
                 var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
                    .AddJsonFile("appsettings.json");
 
@@ -62,9 +61,12 @@ namespace Repository.Models
 
                 entity.Property(e => e.Descripcion).HasColumnType("varchar(255)");
 
-                entity.Property(e => e.FechaDesde).HasColumnType("datetime");
+                entity.Property(e => e.FechaDesde)
+                    .HasColumnType("timestamp")
+                    .HasDefaultValueSql("'current_timestamp()'")
+                    .ValueGeneratedOnAddOrUpdate();
 
-                entity.Property(e => e.FechaHasta).HasColumnType("datetime");
+                entity.Property(e => e.FechaHasta).HasColumnType("timestamp");
 
                 entity.Property(e => e.IdEstado).HasColumnType("tinyint(4)");
 
@@ -92,6 +94,26 @@ namespace Repository.Models
                 entity.Property(e => e.Descripcion)
                     .IsRequired()
                     .HasColumnType("char(1)");
+            });
+
+            modelBuilder.Entity<Precalculado>(entity =>
+            {
+                entity.ToTable("precalculado");
+
+                entity.HasIndex(e => e.IdLinea)
+                    .HasName("IdLinea");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Horas).HasColumnType("int(11)");
+
+                entity.Property(e => e.IdLinea).HasColumnType("tinyint(4)");
+
+                entity.HasOne(d => d.IdLineaNavigation)
+                    .WithMany(p => p.Precalculado)
+                    .HasForeignKey(d => d.IdLinea)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("precalculado_ibfk_1");
             });
         }
     }
