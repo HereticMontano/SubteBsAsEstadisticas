@@ -8,9 +8,9 @@
 		<script>
 			var chart;
 			$(function () {				
-				chart = NewInstanceChart("myChart", @(Html.Raw(Json.Serialize(Model.GetNumeros.ToArray()))));			
+				chart = NewInstanceChart("chart", @(Html.Raw(Json.Serialize(Model.GetNumeros.ToArray()))), @(Html.Raw(Json.Serialize(Model.GetNumeros.ToArray()))));			
 			});
 		</script>
 }
 
-<canvas id="myChart" width="400" height="400"></canvas>
+<canvas id="chart" width="400" height="400"></canvas>
