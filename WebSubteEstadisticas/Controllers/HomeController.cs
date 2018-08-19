@@ -1,37 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Repository;
+using Repository.Models;
 using WebSubteEstadisticas.Models;
 
 namespace WebSubteEstadisticas.Controllers
 {
     public class HomeController : Controller
     {
+        private Manager manager = new Manager(new SubtedataContext());
         public IActionResult Index()
         {
-            return View();
-        }
+            var model = new BaseViewModel() { Title = "Esa papa!" };
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
+            foreach (var item in manager.Estadoservicio)
+            {
+                model.Info.Add(string.Format("linea: {0}  el estado: {1}  el Id:{2}", manager.Linea.Find(item.IdLinea).Descripcion, item.Descripcion, item.Id));
+            } 
 
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+            
+            return View(model);
+        }     
     }
 }
