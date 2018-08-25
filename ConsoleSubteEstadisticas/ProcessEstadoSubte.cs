@@ -26,7 +26,6 @@ namespace ConsoleSubteEstadisticas
 
             var lastLog = Repository.Estadoservicio.Where(x => x.FechaHasta == null);
 
-
             foreach (var item in lineas)
             {
                 var idLinea = (sbyte)Enum.Parse(typeof(EnumLinea), item.Linea.ToUpper());
