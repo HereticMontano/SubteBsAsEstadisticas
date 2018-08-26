@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
 namespace Repository.Models
@@ -59,12 +57,13 @@ namespace Repository.Models
                 entity.HasIndex(e => e.IdLinea)
                     .HasName("IdLinea");
 
-                entity.HasIndex(e => e.IdTipoDia)
-                    .HasName("IdTipoDia");
-
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
                 entity.Property(e => e.Descripcion).HasColumnType("varchar(255)");
+
+                entity.Property(e => e.EsFeriado)
+                    .HasColumnType("tinyint(1)")
+                    .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.Fecha).HasColumnType("date");
 
@@ -75,8 +74,6 @@ namespace Repository.Models
                 entity.Property(e => e.IdEstado).HasColumnType("tinyint(4)");
 
                 entity.Property(e => e.IdLinea).HasColumnType("tinyint(4)");
-
-                entity.Property(e => e.IdTipoDia).HasColumnType("tinyint(4)");
 
                 entity.HasOne(d => d.IdEstadoNavigation)
                     .WithMany(p => p.Estadoservicio)
@@ -89,12 +86,6 @@ namespace Repository.Models
                     .HasForeignKey(d => d.IdLinea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("estadoservicio_ibfk_1");
-
-                entity.HasOne(d => d.IdTipoDiaNavigation)
-                    .WithMany(p => p.Estadoservicio)
-                    .HasForeignKey(d => d.IdTipoDia)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("estadoservicio_ibfk_3");
             });
 
             modelBuilder.Entity<Itinerario>(entity =>

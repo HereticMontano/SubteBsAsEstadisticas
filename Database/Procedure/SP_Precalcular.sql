@@ -11,6 +11,6 @@ BEGIN
 	WHERE ES.IdEstado = 2
 	GROUP BY YEAR(ES.Fecha), MONTH(ES.Fecha), DAY(ES.Fecha), Es.IdLinea;
 	
-	UPDATE Precalculado SET MinutosNormal = FN_GetMinutosNormales(Fecha, MinutosSuspendida);
+	UPDATE Precalculado SET MinutosNormal = FN_GetMinutosNormales(IdLinea, Fecha, MinutosSuspendida);
 
 END//
