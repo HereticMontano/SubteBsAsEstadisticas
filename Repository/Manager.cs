@@ -7,16 +7,17 @@ namespace Repository
 {
     public class Manager
     {
-        private SubtedataContext _manager;
+        private subtedataContext _manager;
 
-        public Manager(SubtedataContext context)
+        public Manager(subtedataContext context)
         {
             _manager = context;
         }
 
         public DbSet<Estadoservicio> Estadoservicio
         {
-            get {
+            get
+            {
                 return _manager.Estadoservicio;
             }
         }
@@ -27,6 +28,20 @@ namespace Repository
             {
                 return _manager.Linea;
             }
+        }
+
+
+        public DbSet<Itinerario> Itinerario
+        {
+            get
+            {
+                return _manager.Itinerario;
+            }
+        }
+
+        public void SaveChanges()
+        {
+            _manager.SaveChanges();
         }
     }
 }

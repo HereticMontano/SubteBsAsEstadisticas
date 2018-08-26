@@ -1,6 +1,6 @@
 DELIMITER //
 
-CREATE OR REPLACE FUNCTION FN_GetMinutosNormales(fecha TIMESTAMP, minutosSuspendido INT) RETURNS INT
+CREATE OR REPLACE FUNCTION FN_GetMinutosNormales(fecha DATE, minutosSuspendido INT) RETURNS INT
 DETERMINISTIC
 BEGIN
 	

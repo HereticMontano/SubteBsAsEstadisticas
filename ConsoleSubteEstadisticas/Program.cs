@@ -10,10 +10,10 @@ namespace ConsoleSubteEstadisticas
         {
             while (true)
             {
-                Console.WriteLine("pRICIPIO");
-                ProcessEstadoSubte.ProcessEstado().Wait();
+                Console.WriteLine("pRICIPIO");                                
+                ProcessEstadoSubte.ProcessEstado().Wait();   
                 Console.WriteLine("fIN");                
-                //Thread.Sleep(new TimeSpan(0,5,0));
+                Thread.Sleep(new TimeSpan(0,5,0));
             }
             
         }

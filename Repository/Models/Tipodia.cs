@@ -3,13 +3,12 @@ using System.Collections.Generic;
 
 namespace Repository.Models
 {
-    public partial class Linea
+    public partial class Tipodia
     {
-        public Linea()
+        public Tipodia()
         {
             Estadoservicio = new HashSet<Estadoservicio>();
             Itinerario = new HashSet<Itinerario>();
-            Precalculado = new HashSet<Precalculado>();
         }
 
         public sbyte Id { get; set; }
@@ -17,6 +16,5 @@ namespace Repository.Models
 
         public ICollection<Estadoservicio> Estadoservicio { get; set; }
         public ICollection<Itinerario> Itinerario { get; set; }
-        public ICollection<Precalculado> Precalculado { get; set; }
     }
 }

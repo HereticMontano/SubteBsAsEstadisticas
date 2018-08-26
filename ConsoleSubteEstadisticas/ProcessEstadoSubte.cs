@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Repository;
 using Repository.Enum;
 using Repository.Models;
 using System;
@@ -14,7 +15,7 @@ namespace ConsoleSubteEstadisticas
     {
         private static readonly HttpClient client = new HttpClient();
 
-        private static readonly SubtedataContext Repository = new SubtedataContext();
+        private static readonly Manager Repository = new Manager(new subtedataContext());
 
         public static async Task ProcessEstado()
         {
@@ -24,25 +25,37 @@ namespace ConsoleSubteEstadisticas
 
             var lineas = AddKeysToValues(await stringTask);
 
-            var lastLog = Repository.Estadoservicio.Where(x => x.FechaHasta == null);
+            var ultimosEstados = Repository.Estadoservicio.Where(x => x.HoraHasta == null);
+
+            var date = DateTime.Now;
 
             foreach (var item in lineas)
             {
                 var idLinea = (sbyte)Enum.Parse(typeof(EnumLinea), item.Linea.ToUpper());
                 var idEstado = (sbyte)Enum.Parse(typeof(EnumEstado), item.Detalle.Status.ToUpper());
-                var linea = lastLog.FirstOrDefault(x => x.IdLinea == idLinea);
-                if (linea == null )
+                var linea = ultimosEstados.FirstOrDefault(x => x.IdLinea == idLinea);
+                
+                if(date.Hour != 2)
                 {
-                    AddEstado(item, idLinea, idEstado);
+                    if (idEstado != (sbyte)EnumEstado.NORMAL && linea == null)
+                    {
+                        AddEstado(item, idLinea, idEstado);
+                    }
+                    else if (linea != null && linea.IdEstado != idEstado)
+                    {
+                        linea.HoraHasta = DateTime.Now.TimeOfDay;
+                    }
                 }
-                else if(linea.IdEstado != idEstado)
-                {
-                    linea.FechaHasta = DateTime.UtcNow;
-                    AddEstado(item, idLinea, idEstado);
-                }
+                //Si son las 2 de la mañana y todavia hay lineas en estado Suspendido se pone el horario hasta segun el itinerario  
+                else if(linea != null)
+                {                    
+                    var itinerario = GetItinerario(linea.Id, date);                                
+                    linea.HoraHasta = itinerario.HoraHasta;
+                }                
             }
-
+            
             Repository.SaveChanges();
+
         }
 
         private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado)
@@ -51,7 +64,9 @@ namespace ConsoleSubteEstadisticas
             {
                 IdLinea = idLinea,
                 IdEstado = idEstado,
-                FechaDesde = DateTime.UtcNow,
+                IdTipoDia = (sbyte)GetEnumTipoDia(DateTime.Now),
+                HoraDesde = DateTime.Now.TimeOfDay,
+                Fecha = DateTime.Now,
                 Descripcion = item.Detalle.Text
             };
             Repository.Estadoservicio.Add(aux);
@@ -69,6 +84,32 @@ namespace ConsoleSubteEstadisticas
             }
             
             return lineas;
+        }
+
+        private static Itinerario GetItinerario(int idLinea, DateTime dateDia)
+        {
+            EnumTipoDia tipoDia = GetEnumTipoDia(dateDia);
+            return Repository.Itinerario.FirstOrDefault(x => x.IdLinea == idLinea && (EnumTipoDia)x.IdTipoDia == tipoDia);
+        }
+
+        private static EnumTipoDia GetEnumTipoDia(DateTime dateDia)
+        {
+            switch (dateDia.DayOfWeek)
+            {
+                case DayOfWeek.Monday:
+                case DayOfWeek.Thursday:
+                case DayOfWeek.Wednesday:
+                case DayOfWeek.Tuesday:
+                case DayOfWeek.Friday:
+                    return EnumTipoDia.DiaDeSemana;
+                case DayOfWeek.Saturday:
+                    return EnumTipoDia.Sabado;
+                case DayOfWeek.Sunday:
+                    return EnumTipoDia.Domingo;
+                default:
+                    //Es imposible que entre por aca pero en el futuro se deberia cambiar esta logica, para que valide pegandole a alguna api para saber si el dia es feriado.
+                    return EnumTipoDia.Feriado;               
+            }
         }
     }
     

@@ -8,7 +8,7 @@ namespace WebSubteEstadisticas.Controllers
 {
     public class HomeController : Controller
     {
-        private Manager manager = new Manager(new SubtedataContext());
+        private Manager manager = new Manager(new subtedataContext());
         public IActionResult Index()
         {
             var model = new HomeViewModel() { Title = "Esa papa!" };

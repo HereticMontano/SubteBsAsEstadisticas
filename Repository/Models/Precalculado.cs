@@ -7,7 +7,9 @@ namespace Repository.Models
     {
         public int Id { get; set; }
         public sbyte IdLinea { get; set; }
-        public int Horas { get; set; }
+        public int? MinutosNormal { get; set; }
+        public int MinutosSuspendida { get; set; }
+        public DateTime Fecha { get; set; }
 
         public Linea IdLineaNavigation { get; set; }
     }
