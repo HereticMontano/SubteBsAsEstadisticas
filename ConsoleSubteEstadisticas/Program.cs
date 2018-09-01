@@ -11,7 +11,7 @@ namespace ConsoleSubteEstadisticas
             while (true)
             {
                 Console.WriteLine("pRICIPIO");                                
-                ProcessEstadoSubte.ProcessEstado().Wait();   
+                ProcessEstadoSubte.ProcesarLinea().Wait();   
                 Console.WriteLine("fIN");                
                 Thread.Sleep(new TimeSpan(0,5,0));
             }
