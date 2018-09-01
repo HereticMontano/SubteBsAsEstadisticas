@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace ConsoleSubteEstadisticas
 {
 
-    public static class ProcessEstadoSubte
+    public static class ProcesarSubte
     {
         private static readonly HttpClient client = new HttpClient();
 
