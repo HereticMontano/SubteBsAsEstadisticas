@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
 namespace Repository.Models
@@ -17,6 +19,7 @@ namespace Repository.Models
 
         public virtual DbSet<Estado> Estado { get; set; }
         public virtual DbSet<Estadoservicio> Estadoservicio { get; set; }
+        public virtual DbSet<Fechaestadoservicio> Fechaestadoservicio { get; set; }
         public virtual DbSet<Itinerario> Itinerario { get; set; }
         public virtual DbSet<Linea> Linea { get; set; }
         public virtual DbSet<Precalculado> Precalculado { get; set; }
@@ -54,6 +57,9 @@ namespace Repository.Models
                 entity.HasIndex(e => e.IdEstado)
                     .HasName("IdEstado");
 
+                entity.HasIndex(e => e.IdFecha)
+                    .HasName("IdFecha");
+
                 entity.HasIndex(e => e.IdLinea)
                     .HasName("IdLinea");
 
@@ -61,17 +67,13 @@ namespace Repository.Models
 
                 entity.Property(e => e.Descripcion).HasColumnType("varchar(255)");
 
-                entity.Property(e => e.EsFeriado)
-                    .HasColumnType("tinyint(1)")
-                    .HasDefaultValueSql("'0'");
-
-                entity.Property(e => e.Fecha).HasColumnType("date");
-
                 entity.Property(e => e.HoraDesde).HasColumnType("time");
 
                 entity.Property(e => e.HoraHasta).HasColumnType("time");
 
                 entity.Property(e => e.IdEstado).HasColumnType("tinyint(4)");
+
+                entity.Property(e => e.IdFecha).HasColumnType("int(11)");
 
                 entity.Property(e => e.IdLinea).HasColumnType("tinyint(4)");
 
@@ -81,11 +83,37 @@ namespace Repository.Models
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("estadoservicio_ibfk_2");
 
+                entity.HasOne(d => d.IdFechaNavigation)
+                    .WithMany(p => p.Estadoservicio)
+                    .HasForeignKey(d => d.IdFecha)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("estadoservicio_ibfk_3");
+
                 entity.HasOne(d => d.IdLineaNavigation)
                     .WithMany(p => p.Estadoservicio)
                     .HasForeignKey(d => d.IdLinea)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("estadoservicio_ibfk_1");
+            });
+
+            modelBuilder.Entity<Fechaestadoservicio>(entity =>
+            {
+                entity.ToTable("fechaestadoservicio");
+
+                entity.HasIndex(e => e.IdTipoDia)
+                    .HasName("IdTipoDia");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.Fecha).HasColumnType("date");
+
+                entity.Property(e => e.IdTipoDia).HasColumnType("tinyint(4)");
+
+                entity.HasOne(d => d.IdTipoDiaNavigation)
+                    .WithMany(p => p.Fechaestadoservicio)
+                    .HasForeignKey(d => d.IdTipoDia)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fechaestadoservicio_ibfk_1");
             });
 
             modelBuilder.Entity<Itinerario>(entity =>
@@ -138,18 +166,27 @@ namespace Repository.Models
             {
                 entity.ToTable("precalculado");
 
+                entity.HasIndex(e => e.IdFecha)
+                    .HasName("IdFecha");
+
                 entity.HasIndex(e => e.IdLinea)
                     .HasName("IdLinea");
 
                 entity.Property(e => e.Id).HasColumnType("int(11)");
 
-                entity.Property(e => e.Fecha).HasColumnType("date");
+                entity.Property(e => e.IdFecha).HasColumnType("int(11)");
 
                 entity.Property(e => e.IdLinea).HasColumnType("tinyint(4)");
 
                 entity.Property(e => e.MinutosNormal).HasColumnType("int(11)");
 
                 entity.Property(e => e.MinutosSuspendida).HasColumnType("int(11)");
+
+                entity.HasOne(d => d.IdFechaNavigation)
+                    .WithMany(p => p.Precalculado)
+                    .HasForeignKey(d => d.IdFecha)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("precalculado_ibfk_2");
 
                 entity.HasOne(d => d.IdLineaNavigation)
                     .WithMany(p => p.Precalculado)

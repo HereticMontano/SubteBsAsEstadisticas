@@ -3,9 +3,9 @@ IdLinea TINYINT NOT NULL,
 IdEstado TINYINT NOT NULL, 
 HoraDesde TIME NOT NULL, 
 HoraHasta TIME, 
-Fecha DATE NOT NULL,
-EsFeriado BOOL DEFAULT 0,
+IdFecha INT NOT NULL,
 Descripcion VARCHAR(255), PRIMARY KEY (Id), 
 FOREIGN KEY (IdLinea) REFERENCES Linea(Id), 
-FOREIGN KEY (IdEstado) REFERENCES Estado(Id))
+FOREIGN KEY (IdEstado) REFERENCES Estado(Id),
+FOREIGN KEY (IdFecha) REFERENCES FechaEstadoServicio(Id))
  

@@ -10,11 +10,11 @@ namespace Repository.Models
         public sbyte IdEstado { get; set; }
         public TimeSpan HoraDesde { get; set; }
         public TimeSpan? HoraHasta { get; set; }
-        public DateTime Fecha { get; set; }
-        public sbyte? EsFeriado { get; set; }
+        public int IdFecha { get; set; }
         public string Descripcion { get; set; }
 
         public Estado IdEstadoNavigation { get; set; }
+        public Fechaestadoservicio IdFechaNavigation { get; set; }
         public Linea IdLineaNavigation { get; set; }
     }
 }

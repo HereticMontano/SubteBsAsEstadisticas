@@ -14,11 +14,19 @@ namespace Repository
             _manager = context;
         }
 
-        public DbSet<Estadoservicio> Estadoservicio
+        public DbSet<Estadoservicio> EstadoServicio
         {
             get
             {
                 return _manager.Estadoservicio;
+            }
+        }
+
+        public DbSet<Fechaestadoservicio> FechaestadoServicio
+        {
+            get
+            {
+                return _manager.Fechaestadoservicio;
             }
         }
 

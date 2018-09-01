@@ -22,12 +22,18 @@ namespace ConsoleSubteEstadisticas
             client.DefaultRequestHeaders.Accept.Clear();
 
             var stringTask = client.GetStringAsync("https://haysubte.now.sh/api");
-
             var lineas = AddKeysToValues(await stringTask);
 
-            var ultimosEstados = Repository.Estadoservicio.Where(x => x.HoraHasta == null);
-
             var date = DateTime.Now;
+            
+            var fecha = Repository.FechaestadoServicio.FirstOrDefault(x => x.Fecha == date || x.Estadoservicio.Any(y => y.HoraHasta == null));
+            if (fecha == null)
+            {
+                fecha = new Fechaestadoservicio { Fecha = date, IdTipoDia = (sbyte)GetEnumTipoDia(date) };
+                Repository.FechaestadoServicio.Add(fecha);
+            }
+
+            var ultimosEstados = fecha.Estadoservicio.Where(x => x.HoraHasta == null);          
 
             foreach (var item in lineas)
             {
@@ -39,17 +45,19 @@ namespace ConsoleSubteEstadisticas
                 {
                     if (idEstado != (sbyte)EnumEstado.NORMAL && linea == null)
                     {
-                        AddEstado(item, idLinea, idEstado);
+                        AddEstado(item, idLinea, idEstado, fecha.Id);
                     }
                     else if (linea != null && linea.IdEstado != idEstado)
                     {
-                        linea.HoraHasta = DateTime.Now.TimeOfDay;
+                        linea.HoraHasta = date.TimeOfDay;
                     }
                 }
                 //Si son las 2 de la mañana y todavia hay lineas en estado Suspendido se pone el horario hasta segun el itinerario  
                 else if(linea != null)
                 {                    
-                    var itinerario = GetItinerario(linea.Id, date);                                
+                    var itinerario = Repository.Itinerario.Where(x => x.IdLinea == idLinea && 
+                                                                      x.IdTipoDia == fecha.IdTipoDia && 
+                                                                      x.FechaItinerario <= fecha.Fecha).OrderByDescending(x => x.FechaItinerario).FirstOrDefault();
                     linea.HoraHasta = itinerario.HoraHasta;
                 }                
             }
@@ -58,20 +66,20 @@ namespace ConsoleSubteEstadisticas
 
         }
 
-        private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado)
+        private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado, int idFecha)
         {
             var aux = new Estadoservicio
             {
                 IdLinea = idLinea,
-                IdEstado = idEstado,
-                IdTipoDia = (sbyte)GetEnumTipoDia(DateTime.Now),
+                IdEstado = idEstado,                
                 HoraDesde = DateTime.Now.TimeOfDay,
-                Fecha = DateTime.Now,
+                IdFecha = idFecha,
                 Descripcion = item.Detalle.Text
             };
-            Repository.Estadoservicio.Add(aux);
+            Repository.EstadoServicio.Add(aux);
         }
 
+        //Asigna las idkey para cada linea que viene en el json
         private static List<SubteStatus> AddKeysToValues(string json)
         {
             var lineas = new List<SubteStatus>();
@@ -84,12 +92,6 @@ namespace ConsoleSubteEstadisticas
             }
             
             return lineas;
-        }
-
-        private static Itinerario GetItinerario(int idLinea, DateTime dateDia)
-        {
-            EnumTipoDia tipoDia = GetEnumTipoDia(dateDia);
-            return Repository.Itinerario.FirstOrDefault(x => x.IdLinea == idLinea && (EnumTipoDia)x.IdTipoDia == tipoDia);
         }
 
         private static EnumTipoDia GetEnumTipoDia(DateTime dateDia)

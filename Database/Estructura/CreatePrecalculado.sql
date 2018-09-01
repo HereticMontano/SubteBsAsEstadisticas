@@ -2,5 +2,6 @@ CREATE TABLE Precalculado(Id INT AUTO_INCREMENT,
 IdLinea TINYINT NOT NULL,
 MinutosNormal INT,
 MinutosSuspendida INT NOT NULL,
-Fecha DATE NOT NULL,  
-PRIMARY KEY (Id), FOREIGN KEY (IdLinea) REFERENCES Linea(Id))
+IdFecha INT NOT NULL,  
+PRIMARY KEY (Id), FOREIGN KEY (IdLinea) REFERENCES Linea(Id),
+FOREIGN KEY (IdFecha) REFERENCES FechaEstadoServicio(Id))

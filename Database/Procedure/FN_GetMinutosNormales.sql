@@ -1,17 +1,23 @@
+#Para un tipo de linea y de fecha en particular retorna los minutos de funcionamiento normal
 DELIMITER //
 
-CREATE OR REPLACE FUNCTION FN_GetMinutosNormales(idLinea TINYINT(4), fecha DATE, minutosSuspendido INT) RETURNS INT
+CREATE OR REPLACE FUNCTION FN_GetMinutosNormales(idLinea TINYINT(4), idFecha INT, minutosSuspendido INT) RETURNS INT
 DETERMINISTIC
 BEGIN
-
-DECLARE ret INT DEFAULT NULL;
-
-SET ret = (SELECT TIMESTAMPDIFF(MINUTE, HoraDesde, HoraHasta) - minutosSuspendido
-FROM Itinerario 
-WHERE IdLinea = idLinea AND 
-	CASE WHEN WEEKDAY(fecha) = 6 THEN IdTipoDia = 3 
-	WHEN WEEKDAY(fecha) = 5 THEN IdTipoDia = 2  
-	ELSE IdTipoDia = 1 END);
+		
+	CREATE TEMPORARY TABLE fechaData (Fecha DATE, IdTipoDia TINYINT);
+	INSERT INTO fechaData 
+	SELECT Fecha, IdTipoDia
+	FROM FechaEstadoServicio
+	WHERE Id = idFecha;
 	
-	RETURN (ret);
+	/*El itinerario del subte a partir de alguna fecha puede ser distinto, por eso obtengo todos los 
+	itinerarios menor a la fecha del calculo y lo ordeno decreciente para quedarme con el itinerario mas cercano a la fecha del calculo*/
+	RETURN (SELECT TIMESTAMPDIFF(MINUTE, IT.HoraDesde, IT.HoraHasta) - minutosSuspendido
+	FROM (SELECT  I.* FROM Itinerario I
+			WHERE I.IdLinea = idLinea AND 
+			I.IdTipoDia = (SELECT IdTipoDia FROM fechaData) AND 
+			I.FechaItinerario <= (SELECT Fecha FROM fechaData) 
+			ORDER BY I.FechaItinerario DESC LIMIT 1) IT);	
+
 END//
