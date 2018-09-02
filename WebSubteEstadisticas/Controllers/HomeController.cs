@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Repository;
 using Repository.Models;
-using System.Linq;
+using WebSubteEstadisticas.Helper;
 using WebSubteEstadisticas.Models;
 
 namespace WebSubteEstadisticas.Controllers
@@ -13,10 +13,7 @@ namespace WebSubteEstadisticas.Controllers
         {
             var model = new HomeViewModel() { Title = "Esa papa!" };
 
-            model.GetEstadoservicios = manager.EstadoServicio.ToList();
-
-            model.GetNumeros.AddRange(new int[] { 12, 19, 3, 5, 2, 3 });
-
+            model.DatosFuncionamiento  = HelperGetDataPeriod.GetStaticLastDay(manager);         
             
             return View(model);
         }     

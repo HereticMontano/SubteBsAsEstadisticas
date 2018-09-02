@@ -1,35 +1,33 @@
-function NewInstanceChart(id, horasSuspendido, horasNormal) {
+function NewInstanceChart(id, horasNormal, horasSuspendido) {
 
 	var canvas = $("#" + id)[0].getContext('2d');
 	return new Chart(canvas, {
 		type: 'bar',
 		data: {
-			labels: ["Linea A", "Linea B", "Linea C", "Linea D", "Linea E", "Linea H", "Linea P"],
+			labels: ["Linea A", "Linea B", "Linea C", "Linea D", "Linea E", "Linea H"],
 			datasets: [{
-				data: horasSuspendido,
-				label: "Horas suspendido",
+				data: horasNormal,
+				label: "Minutos normales",
 				backgroundColor: [
 					'rgb(5, 173, 222)',
 					'rgb(233, 22, 39)',
 					'rgb(4, 106, 180)',
 					'rgb(8, 127, 105)',
 					'rgb(109, 34, 129)',
-					'rgb(255, 202, 3)',
-					'rgb(253, 186, 45)'
+					'rgb(255, 202, 3)'
 				],
 				borderWidth: 1
 			},
 			{
-				data: horasNormal,
-				label: "Horas normal",
+				data: horasSuspendido,
+				label: "Minutos suspendida",
 				backgroundColor: [
 					'rgb(5, 173, 222)',
 					'rgb(233, 22, 39)',
 					'rgb(4, 106, 180)',
 					'rgb(8, 127, 105)',
 					'rgb(109, 34, 129)',
-					'rgb(255, 202, 3)',
-					'rgb(253, 186, 45)'
+					'rgb(255, 202, 3)'
 				],
 				borderWidth: 1
 			}]
@@ -40,8 +38,13 @@ function NewInstanceChart(id, horasSuspendido, horasNormal) {
 			},
 			scales: {
 				yAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: 'Horas'
+					},
 					ticks: {
-						beginAtZero: true
+						max: 24,
+						min: 0
 					}
 				}]
 			}

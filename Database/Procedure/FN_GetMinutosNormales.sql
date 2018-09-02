@@ -22,7 +22,7 @@ BEGIN
 	RETURN (SELECT (CASE WHEN HoraDesde < HoraHasta 
 								THEN TIMESTAMPDIFF(MINUTE,HoraDesde ,HoraHasta) 
 								ELSE 1440 - TIMESTAMPDIFF(MINUTE, HoraHasta, HoraDesde) END) - minutosSuspendido
-	FROM (SELECT  I.* FROM Itinerario I
+	FROM (SELECT I.* FROM Itinerario I
 			WHERE I.IdLinea = idLinea AND 
 			I.IdTipoDia = (SELECT IdTipoDia FROM fechaData) AND 
 			I.FechaItinerario <= (SELECT Fecha FROM fechaData) 

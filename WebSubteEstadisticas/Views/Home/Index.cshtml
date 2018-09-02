@@ -8,7 +8,7 @@
 		<script>
 			var chart;
 			$(function () {				
-				chart = NewInstanceChart("chart", @(Html.Raw(Json.Serialize(Model.GetNumeros.ToArray()))), @(Html.Raw(Json.Serialize(Model.GetNumeros.ToArray()))));			
+				chart = NewInstanceChart("chart", @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosNormales).ToArray()))), @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosSuspendido).ToArray()))));			
 			});
 		</script>
 }

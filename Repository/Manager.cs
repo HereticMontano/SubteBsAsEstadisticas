@@ -30,6 +30,14 @@ namespace Repository
             }
         }
 
+        public DbSet<Precalculado> Precalculados
+        {
+            get
+            {
+                return _manager.Precalculado;
+            }
+        }
+
         public DbSet<Linea> Linea
         {
             get
