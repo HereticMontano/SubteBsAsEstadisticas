@@ -17,7 +17,7 @@ namespace ConsoleSubteEstadisticas
 
         private static readonly Manager Repository = new Manager(new subtedataContext());
 
-        public static async Task ProcesarLinea()
+        public static async Task ProcesarLineas()
         {
             client.DefaultRequestHeaders.Accept.Clear();
 
@@ -33,7 +33,6 @@ namespace ConsoleSubteEstadisticas
         private static void ProcesarEstados(List<SubteStatus> lineas)
         {
             var date = DateTime.Now;
-
             var fecha = Repository.FechaestadoServicio.FirstOrDefault(x => x.Fecha.ToShortDateString() == date.ToShortDateString() ||
                                                                            x.Estadoservicio.Any(y => y.HoraHasta == null));
             if (fecha == null)

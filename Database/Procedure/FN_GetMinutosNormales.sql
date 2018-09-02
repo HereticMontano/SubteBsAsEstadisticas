@@ -12,7 +12,7 @@ BEGIN
 	WHERE Id = idFecha;
 	
 	/*El itinerario del subte a partir de alguna fecha puede ser distinto, por eso obtengo todos los 
-	itinerarios menor a la fecha del calculo y lo ordeno decreciente para quedarme con el itinerario mas cercano a la fecha del calculo*/
+	itinerarios menor a la fecha del estado del servicio  y lo ordeno decreciente para quedarme con el itinerario vigente a la fecha del estado del servicio*/
 	RETURN (SELECT TIMESTAMPDIFF(MINUTE, IT.HoraDesde, IT.HoraHasta) - minutosSuspendido
 	FROM (SELECT  I.* FROM Itinerario I
 			WHERE I.IdLinea = idLinea AND 
