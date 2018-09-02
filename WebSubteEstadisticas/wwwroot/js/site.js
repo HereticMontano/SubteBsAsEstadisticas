@@ -43,8 +43,9 @@ function NewInstanceChart(id, horasNormal, horasSuspendido) {
 						labelString: 'Horas'
 					},
 					ticks: {
-						max: 24,
-						min: 0
+						min: 0,
+						max: 20,
+						stepSize: 1
 					}
 				}]
 			}
