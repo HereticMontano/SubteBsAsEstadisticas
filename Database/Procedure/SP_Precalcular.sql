@@ -16,14 +16,14 @@ BEGIN
 	FROM FechaEstadoServicio FE 
 	JOIN EstadoServicio ES ON ES.IdFecha = FE.Id 
 	WHERE ES.IdEstado = 2
-	GROUP BY Es.IdLinea;
+	GROUP BY ES.IdFecha, ES.IdLinea;
 	
-	
+
+	-- Agrego las lineas que como estuvieron funcionando normalmente todo el dia, no existe en EstadoServicio
 	INSERT INTO Precalculado(IdLinea, MinutosSuspendida, IdFecha) 
 	SELECT L.Id, 0, FE.Id	
 	FROM FechaEstadoServicio FE
-	JOIN Precalculado P ON P.idFecha = Fe.id
-   JOIN Linea L ON L.Id <> P.idLinea;
+   JOIN Linea L ON L.Id NOT IN (SELECT P.IdLinea FROM Precalculado P WHERE P.IdFecha = FE.Id);
 	
 	UPDATE Precalculado SET MinutosNormal = FN_GetMinutosNormales(IdLinea, IdFecha, MinutosSuspendida);
 
