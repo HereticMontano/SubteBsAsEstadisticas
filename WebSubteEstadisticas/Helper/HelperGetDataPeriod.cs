@@ -11,12 +11,15 @@ namespace WebSubteEstadisticas.Helper
         public static List<TiempoFuncionamiento> GetStaticLastDay(Manager manager)
         {
             var ret = new List<TiempoFuncionamiento>();
-            var fechaEstado = manager.FechaestadoServicio.First(x => x.Fecha.ToShortDateString() == DateTime.Now.AddDays(-1).ToShortDateString());
-            var lineasPrecalculadas = manager.Precalculados.Where(x => x.IdFecha == fechaEstado.Id);
-
-            foreach (var item in lineasPrecalculadas)
+            var fechaEstado = manager.FechaestadoServicio.LastOrDefault(x => x.Fecha <= DateTime.Now.AddDays(-1));
+            if (fechaEstado != null)
             {
-                ret.Add(new TiempoFuncionamiento (item.MinutosNormal.Value, item.MinutosSuspendida));
+                var lineasPrecalculadas = manager.Precalculados.Where(x => x.IdFecha == fechaEstado.Id);
+
+                foreach (var item in lineasPrecalculadas)
+                {
+                    ret.Add(new TiempoFuncionamiento(item.MinutosNormal.Value, item.MinutosSuspendida));
+                }
             }
 
             return ret;

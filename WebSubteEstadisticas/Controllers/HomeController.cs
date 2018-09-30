@@ -11,11 +11,20 @@ namespace WebSubteEstadisticas.Controllers
         private Manager manager = new Manager(new subtedataContext());
         public IActionResult Index()
         {
-            var model = new HomeViewModel() { Title = "Esa papa!" };
+            var model = new HomeViewModel();
 
             model.DatosFuncionamiento  = HelperGetDataPeriod.GetStaticLastDay(manager);         
             
             return View(model);
-        }     
+        }
+
+        public IActionResult About()
+        {
+            var model = new HomeViewModel();
+
+            model.DatosFuncionamiento = HelperGetDataPeriod.GetStaticLastDay(manager);
+
+            return View(model);
+        }
     }
 }
