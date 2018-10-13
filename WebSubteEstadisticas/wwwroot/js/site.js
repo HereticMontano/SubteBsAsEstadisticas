@@ -1,4 +1,18 @@
-function NewInstanceChart(id, horasNormal, horasSuspendido) {
+function NewInstanceChart(id, horasNormal, horasSuspendido, escala) {
+
+	var t = {
+		yAxes: [{
+			scaleLabel: {
+				display: true,
+				labelString: 'Horas'
+			},
+			ticks: {
+				min: 0,
+				max: escala,
+				stepSize: 1
+			}
+		}]
+	};
 
 	var canvas = $("#" + id)[0].getContext('2d');
 	return new Chart(canvas, {
@@ -28,8 +42,16 @@ function NewInstanceChart(id, horasNormal, horasSuspendido) {
 					'rgb(8, 127, 105)',
 					'rgb(109, 34, 129)',
 					'rgb(255, 202, 3)'
+				],				
+				borderColor: [
+					'rgba(0,0,0,1)',
+					'rgba(0,0,0,1)',
+					'rgba(0,0,0,1)',
+					'rgba(0,0,0,1)',
+					'rgba(0,0,0,1)',
+					'rgba(0,0,0,1)',
 				],
-				borderWidth: 1
+				borderWidth: 3
 			}]
 		},
 		options: {
@@ -37,17 +59,7 @@ function NewInstanceChart(id, horasNormal, horasSuspendido) {
 				display: false
 			},
 			scales: {
-				yAxes: [{
-					scaleLabel: {
-						display: true,
-						labelString: 'Horas'
-					},
-					ticks: {
-						min: 0,
-						max: 20,
-						stepSize: 1
-					}
-				}]
+				yAxes : t.yAxes
 			}
 		}
 	});

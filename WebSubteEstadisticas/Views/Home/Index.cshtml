@@ -1,16 +1,77 @@
 ﻿@model HomeViewModel
 
+
 @section Scripts
 	{
-	<script type="text/javascript" src="@Url.Content("/js/Chart.min.js")"></script>
-	<script type="text/javascript" src="@Url.Content("/js/Site.js")"></script>
 
-		<script>
-			var chart;
-			$(function () {				
-				chart = NewInstanceChart("chart", @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosNormales).ToArray()))), @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosSuspendido).ToArray()))), 20);			
-			});
-		</script>
+	<script type="text/javascript" src="@Url.Content("/js/Chart.min.js")"></script>
+	<script type="text/javascript" src="@Url.Content("/lib/bootstrap/dist/js/bootstrap-datepicker.min.js")"></script>
+	<script type="text/javascript" src="@Url.Content("/lib/bootstrap/dist/js/bootstrap-datepicker.es.js")"></script>
+
+	<script>
+		var chart;
+		
+			$(function () {
+				chart = NewInstanceChart("chart", @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosNormales).ToArray()))), @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosSuspendido).ToArray()))), 20);				
+				$('#fechaDesde').datepicker({					
+					language: 'es',
+					autoclose: true										
+				});			
+				
+
+				$('#fechaHasta').datepicker({
+					language: 'es',
+					autoclose: true
+				});
+
+				var ayer = new Date();
+				ayer.setDate(ayer.getDate() - 1);
+
+				$('#fechaDesde').datepicker('update', ayer);
+				$('#fechaHasta').datepicker('update', ayer);				
+		});
+
+	</script>
+
 }
 
-<canvas id="chart" width="400" height="400"></canvas>
+<div class="container" style="margin-top:10px">
+	<div class="row">
+		<div class='col-sm-3'>
+			<div class="form-group">
+				<label>Fecha Desde</label>
+				<div class='input-group date' id='fechaDesde'>
+					<input type='text' class="form-control" />
+					<span class="input-group-addon">
+						<span class="glyphicon glyphicon-calendar"></span>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class='col-sm-3'>
+			<div class="form-group">
+				<label>Fecha Hasta</label>
+				<div class='input-group date' id='fechaHasta'>
+					<input type='text' class="form-control" />
+					<span class="input-group-addon">
+						<span class="glyphicon glyphicon-calendar"></span>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class='col-sm-3'>
+			<div class="form-group">
+				<button>Filtrar</button>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class='col-sm-8'>
+			<div class="form-group">
+				<canvas id="chart" width="400" height="400"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
