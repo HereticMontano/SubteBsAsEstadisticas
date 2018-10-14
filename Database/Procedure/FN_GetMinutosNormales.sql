@@ -1,7 +1,7 @@
 #Para un tipo de linea y de fecha en particular retorna los minutos de funcionamiento normal
 DELIMITER //
 
-CREATE OR REPLACE FUNCTION FN_GetMinutosNormales(idLinea TINYINT(4), idFecha INT, minutosSuspendido INT) RETURNS INT
+CREATE OR REPLACE FUNCTION FN_GetMinutosNormales(idLinea TINYINT(4), idFecha INT, minutosAnormales INT) RETURNS INT
 DETERMINISTIC
 BEGIN
 		
@@ -21,7 +21,7 @@ BEGIN
 	*/
 	RETURN (SELECT (CASE WHEN HoraDesde < HoraHasta 
 								THEN TIMESTAMPDIFF(MINUTE,HoraDesde ,HoraHasta) 
-								ELSE 1440 - TIMESTAMPDIFF(MINUTE, HoraHasta, HoraDesde) END) - minutosSuspendido
+								ELSE 1440 - TIMESTAMPDIFF(MINUTE, HoraHasta, HoraDesde) END) - minutosAnormales
 	FROM (SELECT I.* FROM Itinerario I
 			WHERE I.IdLinea = idLinea AND 
 			I.IdTipoDia = (SELECT IdTipoDia FROM fechaData) AND 

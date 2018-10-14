@@ -4,6 +4,7 @@ using Repository.Enum;
 using Repository.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -45,11 +46,11 @@ namespace ConsoleSubteEstadisticas
 
             foreach (var item in lineas)
             {
-                var idLinea = (sbyte)Enum.Parse(typeof(EnumLinea), item.Linea.ToUpper());
-                var idEstado = (sbyte)Enum.Parse(typeof(EnumEstado), item.Detalle.Status.ToUpper());
+                var idLinea = (sbyte)Enum.Parse<EnumLinea>(item.Linea.ToUpper());
+                sbyte idEstado = (sbyte)GetEstado(item);
                 var linea = ultimosEstados.FirstOrDefault(x => x.IdLinea == idLinea);
 
-                //Se obitiene el itinerario de la linea, segun el tipo de dia y la fecha mas proxima a la de hoy
+                //Se obitiene el itinerario de la linea, segun el tipo de dia y la fecha mas proxima a la de hoy (toma el itinerario mas nuevo de haber habido un cambio de horarios de funcionamiento)
                 var itinerario = Repository.Itinerario.Where(x => x.IdLinea == idLinea &&
                                                                     x.IdTipoDia == fecha.IdTipoDia &&
                                                                     x.FechaItinerario <= fecha.Fecha).OrderByDescending(x => x.FechaItinerario).FirstOrDefault();
@@ -65,12 +66,26 @@ namespace ConsoleSubteEstadisticas
                         linea.HoraHasta = date.TimeOfDay;
                     }
                 }
-                //Si la linea temrino su recorrido segun su itinerari y todavia esta en estado Suspendido se pone horario hasta segun el itinerario  
+                //Si la linea temrino su recorrido segun su itinerari y todavia esta en estado distinto a Normal se pone "horario hasta" segun el itinerario  
                 else if (linea != null)
-                {                  
+                {
                     linea.HoraHasta = itinerario.HoraHasta;
                 }
             }
+        }
+
+        private static EnumEstado GetEstado(SubteStatus item)
+        {
+            if (Enum.Parse<EnumEstado>(item.Detalle.Status.ToUpper()) != EnumEstado.NORMAL)
+            {
+                if (item.Detalle.Text.IndexOf("demora", StringComparison.OrdinalIgnoreCase) != -1)
+                    return EnumEstado.DEMORA;
+                else if (item.Detalle.Text.IndexOf("limitado", StringComparison.OrdinalIgnoreCase) != -1)
+                    return EnumEstado.LIMITADA;
+                else 
+                    return EnumEstado.SUSPENDIDO;
+            }
+            return EnumEstado.NORMAL;
         }
 
         private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado, int idFecha)

@@ -16,7 +16,7 @@ namespace Repository.Models
         public sbyte IdTipoDia { get; set; }
 
         public Tipodia IdTipoDiaNavigation { get; set; }
-        public virtual ICollection<Estadoservicio> Estadoservicio { get; set; }
+        public ICollection<Estadoservicio> Estadoservicio { get; set; }
         public ICollection<Precalculado> Precalculado { get; set; }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 
 namespace Repository.Models
@@ -178,9 +176,21 @@ namespace Repository.Models
 
                 entity.Property(e => e.IdLinea).HasColumnType("tinyint(4)");
 
-                entity.Property(e => e.MinutosNormal).HasColumnType("int(11)");
+                entity.Property(e => e.MinutosDemora)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
 
-                entity.Property(e => e.MinutosSuspendida).HasColumnType("int(11)");
+                entity.Property(e => e.MinutosLimitada)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.MinutosNormal)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.MinutosSuspendida)
+                    .HasColumnType("int(11)")
+                    .HasDefaultValueSql("'0'");
 
                 entity.HasOne(d => d.IdFechaNavigation)
                     .WithMany(p => p.Precalculado)
