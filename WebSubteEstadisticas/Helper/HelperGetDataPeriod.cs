@@ -12,13 +12,14 @@ namespace WebSubteEstadisticas.Helper
         {
             var ret = new List<TiempoFuncionamiento>();
             var fechaEstado = manager.FechaestadoServicio.LastOrDefault(x => x.Fecha <= DateTime.Now.AddDays(-1));
+            
             if (fechaEstado != null)
             {
                 var lineasPrecalculadas = manager.Precalculados.Where(x => x.IdFecha == fechaEstado.Id);
 
                 foreach (var item in lineasPrecalculadas)
                 {
-                    ret.Add(new TiempoFuncionamiento(item.MinutosNormal.Value, item.MinutosSuspendida));
+                    ret.Add(new TiempoFuncionamiento(item.MinutosNormal, item.MinutosSuspendida));
                 }
             }
 
