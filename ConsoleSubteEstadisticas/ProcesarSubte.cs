@@ -75,17 +75,25 @@ namespace ConsoleSubteEstadisticas
         }
 
         private static EnumEstado GetEstado(SubteStatus item)
-        {
-            if (Enum.Parse<EnumEstado>(item.Detalle.Status.ToUpper()) != EnumEstado.NORMAL)
+        {            
+            if (EsEstadoSuspendido(item))
             {
                 if (item.Detalle.Text.IndexOf("demora", StringComparison.OrdinalIgnoreCase) != -1)
                     return EnumEstado.DEMORA;
-                else if (item.Detalle.Text.IndexOf("limitado", StringComparison.OrdinalIgnoreCase) != -1)
+                else if (item.Detalle.Text.IndexOf("limitado", StringComparison.OrdinalIgnoreCase) != -1 || item.Detalle.Text.IndexOf("no se detienen", StringComparison.OrdinalIgnoreCase) != -1)
                     return EnumEstado.LIMITADA;
-                else 
+                else
                     return EnumEstado.SUSPENDIDO;
             }
             return EnumEstado.NORMAL;
+        }
+
+        private static bool EsEstadoSuspendido(SubteStatus item)
+        {
+            // El item puede venir en estado suspendido, pero la descripcion del estado explica que la linea esta tecnicamente normal.
+            return Enum.Parse<EnumEstado>(item.Detalle.Status, true) == EnumEstado.SUSPENDIDO &&
+                    item.Detalle.Text.IndexOf("ya se detienen", StringComparison.OrdinalIgnoreCase) == -1 &&
+                    item.Detalle.Text.IndexOf("ya realiza", StringComparison.OrdinalIgnoreCase) == -1;
         }
 
         private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado, int idFecha)
