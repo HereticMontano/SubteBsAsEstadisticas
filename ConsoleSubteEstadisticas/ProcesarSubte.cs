@@ -83,6 +83,7 @@ namespace ConsoleSubteEstadisticas
                 else if (item.Detalle.Text.IndexOf("limitado", StringComparison.OrdinalIgnoreCase) != -1 || item.Detalle.Text.IndexOf("no se detienen", StringComparison.OrdinalIgnoreCase) != -1)
                     return EnumEstado.LIMITADA;
                 else
+
                     return EnumEstado.SUSPENDIDO;
             }
             return EnumEstado.NORMAL;
