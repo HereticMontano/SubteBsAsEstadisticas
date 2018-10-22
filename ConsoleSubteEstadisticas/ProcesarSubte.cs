@@ -93,7 +93,7 @@ namespace ConsoleSubteEstadisticas
             // El item puede venir en estado suspendido, pero la descripcion del estado explica que la linea esta tecnicamente normal.
             return Enum.Parse<EnumEstado>(item.Detalle.Status, true) == EnumEstado.SUSPENDIDO &&
                     item.Detalle.Text.IndexOf("ya se detienen", StringComparison.OrdinalIgnoreCase) == -1 &&
-                    item.Detalle.Text.IndexOf("ya realiza", StringComparison.OrdinalIgnoreCase) == -1;
+                    item.Detalle.Text.IndexOf("ya realiza", StringComparison.OrdinalIgnoreCase) == -1; 
         }
 
         private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado, int idFecha)
