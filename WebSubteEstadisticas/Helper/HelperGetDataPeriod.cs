@@ -1,4 +1,5 @@
 ﻿using Repository;
+using Repository.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,32 @@ namespace WebSubteEstadisticas.Helper
                 foreach (var item in lineasPrecalculadas)
                 {
                     ret.Add(new TiempoFuncionamiento(item.MinutosNormal, item.MinutosSuspendida));
+                }
+            }
+
+            return ret;
+        }
+
+        public static List<TiempoFuncionamiento> GetBetweenDates(Manager manager, DateTime desde, DateTime hasta)
+        {
+            var ret = new List<TiempoFuncionamiento>();
+            var fechasEstado = manager.FechaestadoServicio.Where(x => x.Fecha >= desde && x.Fecha.Date <= hasta);
+
+            if (fechasEstado != null && fechasEstado.Count() > 0)
+            {
+                var lineasPrecalculadas = manager.Precalculados.Where(x => fechasEstado.Any(y => y.Id == x.IdFecha)).ToList();
+
+                lineasPrecalculadas = lineasPrecalculadas.GroupBy(x => x.IdLinea).Select(g => new Precalculado
+                {
+                    MinutosNormal = g.Sum(x => x.MinutosNormal),
+                    MinutosSuspendida = g.Sum(x => x.MinutosSuspendida),
+                    MinutosDemora = g.Sum(x => x.MinutosDemora),
+                    MinutosLimitada = g.Sum(x => x.MinutosLimitada),
+                }).ToList();               
+
+                foreach (var item in lineasPrecalculadas)
+                {
+                    ret.Add(new TiempoFuncionamiento(item));
                 }
             }
 

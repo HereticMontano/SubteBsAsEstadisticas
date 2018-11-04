@@ -10,27 +10,46 @@
 
 	<script>
 		var chart;
-		
-			$(function () {
-				chart = NewInstanceChart("chart", @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosNormales).ToArray()))), @(Html.Raw(Json.Serialize(Model.DatosFuncionamiento.Select(x => x.GetHorasYMinutosSuspendido).ToArray()))), 20);				
-				$('#fechaDesde').datepicker({					
-					language: 'es',
-					autoclose: true										
-				});			
-				
 
-				$('#fechaHasta').datepicker({
-					language: 'es',
-					autoclose: true
-				});
+		function GetFormatDate(date) { 
+			return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+		}
 
-				var ayer = new Date();
-				ayer.setDate(ayer.getDate() - 1);
+		function getData() {						
+			var desde = GetFormatDate($('#fechaDesde').datepicker('getDate'));						
+			var hasta = GetFormatDate($('#fechaHasta').datepicker('getDate'));	
 
-				$('#fechaDesde').datepicker('update', ayer);
-				$('#fechaHasta').datepicker('update', ayer);				
+			$.ajax({
+				url: "@Url.Action("GetDataBetweens", "DataApi")",
+				data: { Desde: desde, Hasta: hasta },
+				success: function (data) {
+					chart.data.datasets[0].data = data.normal;
+					chart.data.datasets[1].data = data.anormales;
+					chart.update();
+				 },
+				dataType: "json"
+			});
+		}
+
+		$(function () {
+			chart = NewInstanceChart("chart", 20);			
+			$('#fechaDesde').datepicker({				
+				language: 'es',
+				autoclose: true
+			});
+
+			$('#fechaHasta').datepicker({				
+				language: 'es',
+				autoclose: true
+			});
+
+			var ayer = new Date();
+			ayer.setDate(ayer.getDate() - 1);
+
+			$('#fechaDesde').datepicker('update', ayer);
+			$('#fechaHasta').datepicker('update', ayer);
+			getData();
 		});
-
 	</script>
 
 }
@@ -63,7 +82,7 @@
 
 		<div class='col-sm-3'>
 			<div class="form-group">
-				<button>Filtrar</button>
+				<button onclick="getData()">Filtrar</button>
 			</div>
 		</div>
 	</div>

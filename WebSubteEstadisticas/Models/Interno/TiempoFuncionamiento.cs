@@ -1,31 +1,59 @@
-﻿using System;
+﻿using Repository.Models;
+using System;
 
 namespace WebSubteEstadisticas.Models.Interno
 {
     public class TiempoFuncionamiento
-    {
-        private int _minutosNormales;
-        private int _minutosSuspendos;
+    {    
+        private Precalculado Precalculo;
 
         public TiempoFuncionamiento(int minutosNormales, int minutosSuspendidos)
         {
-            _minutosNormales = minutosNormales;
-            _minutosSuspendos = minutosSuspendidos;
+          
         }
 
-        public double GetHorasYMinutosNormales
+        public TiempoFuncionamiento(Precalculado datos)
+        {            
+            Precalculo = datos;
+        }
+
+        public double GetTiempoNormal
         {
             get
             {
-                return Math.Round(TimeSpan.FromMinutes(_minutosNormales).TotalHours, 2);
+                return Math.Round(TimeSpan.FromMinutes(Precalculo.MinutosNormal).TotalHours, 2);
             }
         }
 
-        public double GetHorasYMinutosSuspendido
+        public double GetTiempoSuspendido
         {
             get
             {
-                return Math.Round(TimeSpan.FromMinutes(_minutosSuspendos).TotalHours, 2);
+                return Math.Round(TimeSpan.FromMinutes(Precalculo.MinutosSuspendida).TotalHours, 2);
+            }
+        }
+
+        public double GetTiempoLimitada
+        {
+            get
+            {
+                return Math.Round(TimeSpan.FromMinutes(Precalculo.MinutosLimitada).TotalHours, 2);
+            }
+        }
+
+        public double GetTiempoDemora
+        {
+            get
+            {
+                return Math.Round(TimeSpan.FromMinutes(Precalculo.MinutosDemora).TotalHours, 2);
+            }
+        }
+
+        public double GetTiempoAnormales
+        {
+            get
+            {
+                return Math.Round(TimeSpan.FromMinutes(Precalculo.MinutosSuspendida + Precalculo.MinutosLimitada + Precalculo.MinutosDemora).TotalHours, 2);
             }
         }
     }
