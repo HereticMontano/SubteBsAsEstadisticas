@@ -2,9 +2,9 @@
 using Repository;
 using Repository.Enum;
 using Repository.Models;
+using Repository.Common;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,8 +22,9 @@ namespace ConsoleSubteEstadisticas
         {
             client.DefaultRequestHeaders.Accept.Clear();
 
-            var stringTask = client.GetStringAsync("https://haysubte.now.sh/api");
-            var lineas = AddKeysToValues(await stringTask);
+            //var stringTask = client.GetStringAsync("https://haysubte.now.sh/api");
+            var stringTask = client.GetStringAsync("http://localhost:55300/api/SubteStateApi");
+            var lineas = Deserealize(await stringTask);
 
             ProcesarEstados(lineas);
 
@@ -78,9 +79,9 @@ namespace ConsoleSubteEstadisticas
         {            
             if (EsEstadoSuspendido(item))
             {
-                if (item.Detalle.Text.IndexOf("demora", StringComparison.OrdinalIgnoreCase) != -1)
+                if (item.Text.IndexOf("demora", StringComparison.OrdinalIgnoreCase) != -1)
                     return EnumEstado.DEMORA;
-                else if (item.Detalle.Text.IndexOf("limitado", StringComparison.OrdinalIgnoreCase) != -1 || item.Detalle.Text.IndexOf("no se detienen", StringComparison.OrdinalIgnoreCase) != -1)
+                else if (item.Text.IndexOf("limitado", StringComparison.OrdinalIgnoreCase) != -1 || item.Text.IndexOf("no se detienen", StringComparison.OrdinalIgnoreCase) != -1)
                     return EnumEstado.LIMITADA;
                 else
                     return EnumEstado.SUSPENDIDO;
@@ -91,9 +92,9 @@ namespace ConsoleSubteEstadisticas
         private static bool EsEstadoSuspendido(SubteStatus item)
         {
             // El item puede venir en estado suspendido, pero la descripcion del estado explica que la linea esta tecnicamente normal.
-            return Enum.Parse<EnumEstado>(item.Detalle.Status, true) == EnumEstado.SUSPENDIDO &&
-                    item.Detalle.Text.IndexOf("ya se detienen", StringComparison.OrdinalIgnoreCase) == -1 &&
-                    item.Detalle.Text.IndexOf("ya realiza", StringComparison.OrdinalIgnoreCase) == -1; 
+            return Enum.Parse<EnumEstado>(item.Status, true) == EnumEstado.SUSPENDIDO &&
+                    item.Text.IndexOf("ya se detienen", StringComparison.OrdinalIgnoreCase) == -1 &&
+                    item.Text.IndexOf("ya realiza", StringComparison.OrdinalIgnoreCase) == -1; 
         }
 
         private static void AddEstado(SubteStatus item, sbyte idLinea, sbyte idEstado, int idFecha)
@@ -104,25 +105,15 @@ namespace ConsoleSubteEstadisticas
                 IdEstado = idEstado,                
                 HoraDesde = DateTime.Now.TimeOfDay,
                 IdFecha = idFecha,
-                Descripcion = item.Detalle.Text
+                Descripcion = item.Text
             };
             Repository.EstadoServicio.Add(aux);
         }
 
-        //Asigna las idkey para cada linea que viene en el json
-        private static List<SubteStatus> AddKeysToValues(string json)
+        private static List<SubteStatus> Deserealize(string json)
         {
-            var lineas = new List<SubteStatus>();
-            var routes_list = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-            foreach (var item in routes_list)
-            {
-                var aux = new SubteStatus { Linea = item.Key };
-                aux.Detalle = JsonConvert.DeserializeObject<SubteDetalle>(item.Value.ToString());
-                lineas.Add(aux);
-            }
-            
-            return lineas;
-        }
+            return JsonConvert.DeserializeObject<List<SubteStatus>>(json);
+        }      
 
         private static EnumTipoDia GetEnumTipoDia(DateTime dateDia)
         {
